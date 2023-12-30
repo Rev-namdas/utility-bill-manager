@@ -14,6 +14,10 @@ import AdminDashboard from './app/admin/dashboard/AdminDashboard';
 import Layout from './layout/Layout';
 import AdminBillList from './app/admin/bill-list/AdminBillList';
 import AdminReminderList from './app/admin/reminder-list/AdminReminderList';
+import AdminBalance from './app/admin/balance/AdminBalance';
+import Balance from './app/balance/Balance';
+import Reminders from './app/reminder/Reminders';
+import AdminVoucher from './app/admin/voucher/AdminVoucher';
 
 function App() {
   const [isAuth, setIsAuth] = useState(false)
@@ -58,6 +62,8 @@ function App() {
             <Route path='/gas-bill' element={<GasBill />} />
             <Route path='/electricity-bill' element={<ElectricityBill />} />
             <Route path='/water-bill' element={<WaterBill />} />
+            <Route path='/balance' element={<Balance />} />
+            <Route path='/reminders' element={<Reminders />} />
             <Route path='*' element={<Navigate to='/' />} />
           </Routes>
           </Layout>
@@ -87,6 +93,8 @@ function App() {
             <Route path='/admin/user-list' element={<AdminUserList />} />
             <Route path='/admin/bill-list' element={<AdminBillList />} />
             <Route path='/admin/reminder-list' element={<AdminReminderList />} />
+            <Route path='/admin/user-balance' element={<AdminBalance />} />
+            <Route path='/admin/voucher' element={<AdminVoucher />} />
             <Route path='*' element={<Navigate to='/admin/dashboard' />} />
           </Routes>
           </Layout>

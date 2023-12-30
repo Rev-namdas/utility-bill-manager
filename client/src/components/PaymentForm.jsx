@@ -21,7 +21,7 @@ import {
 } from "./ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { errorMsg, successMsg } from '../helpers/notificationMsg'
-import { checkEmailExists, fetchBillListByUser, setUserEmail, submitPayment } from '../api/apiCall'
+import { checkEmailExists, fetchBillListByUser, setUserEmail, submitPayment, verifyVoucher } from '../api/apiCall'
 import moment from 'moment/moment'
   
 
@@ -39,6 +39,8 @@ export default function PaymentForm({ fromFor = '' }) {
 	const [popUp, setPopUp] = useState(false)
 	const [isEmailExist, setIsEmailExist] = useState(false)
 	const [setupStep, setSetupStep] = useState(1)
+	const [voucherInput, setVoucherInput] = useState('')
+	const [isVerified, setIsVerified] = useState(false)
 
 	const fetchData = async () => {
 		const id = sessionStorage.getItem('utl_id')
@@ -108,6 +110,26 @@ export default function PaymentForm({ fromFor = '' }) {
 		setPopUp(true)
 	}
 
+	const handleVerify = async () => {
+		if(voucherInput.split(' ').length > 1){
+			errorMsg('Invalid Voucher')
+		}
+		
+		const res = await verifyVoucher(voucherInput)
+		if(res.flag === 'SUCCESS'){
+			setInputData(prev => ({
+				...prev,
+				amount: prev.amount - res.amount
+			}))
+
+			successMsg(res.msg)
+			setIsVerified(true)
+		} else {
+			errorMsg(res.msg)
+			setIsVerified(false)
+		}
+	}
+
 	const handleChoice = async (choice) => {
 		if(!isEmailExist) return setSetupStep(2)
 
@@ -159,7 +181,7 @@ export default function PaymentForm({ fromFor = '' }) {
 
   return (
 	<>
-	<Card className="w-full md:w-1/3 mx-auto shadow-lg p-6">
+	<Card className="w-full md:w-1/2 mx-auto shadow-lg p-6">
 		<div className='grid grid-cols-4 gap-3 items-center'>
 			<Label htmlFor='id'>Card No</Label>
 			<Input 
@@ -206,9 +228,27 @@ export default function PaymentForm({ fromFor = '' }) {
 				value={inputData.amount}
 				onChange={handleInputData}
 			/>
+			
+			<Label htmlFor='voucher'>Voucher</Label>
+			{isVerified
+			?
+			<Button className='col-span-3'>Verified</Button>
+			:
+			<div className='col-span-3 grid grid-cols-3 gap-2'>
+				<Input 
+					id='voucher'
+					min='1'
+					className='col-span-2'
+					name='voucher'
+					value={voucherInput}
+					onChange={(e) => setVoucherInput(e.target.value)}
+				/>
+				<Button onClick={handleVerify}>Verify</Button>
+			</div>
+			}
 
 			<div className="col-span-4 grid justify-end">
-				<Button className='px-7' onClick={handlePayNow}>Pay Now</Button>
+				<Button className='px-7 bg-green-700 hover:bg-green-800' onClick={handlePayNow}>Pay Now</Button>
 			</div>
 		</div>
 	</Card>
@@ -255,7 +295,7 @@ export default function PaymentForm({ fromFor = '' }) {
 		</DialogContent>
 	</Dialog>
 
-	<Card className="w-full md:w-1/3 mx-auto shadow-lg p-6 mt-4">
+	<Card className="w-full md:w-1/2 mx-auto shadow-lg p-6 mt-4">
 	<Table>
 		<TableHeader>
 			<TableRow>

@@ -69,6 +69,15 @@ const createNewPayment = async (req, res) => {
 			})
 		}
 
+		await db('transactions').insert({
+			user_id: user_id,
+			bill_id: result,
+			amount: amount,
+			created_at: moment().unix()
+		})
+
+		await db('users').decrement('balance', amount).where('id', user_id)
+
 		return res.status(statusCode.CREATED)
 		.send({
 			flag: 'SUCCESS',
@@ -126,7 +135,44 @@ const getBillList = async (req, res) => {
 	}
 }
 
+const getBillListByUser = async (req, res) => {
+	const { user_id } = req.params
+
+	try {
+		const result = await db('transactions')
+							.select('transactions.*', 'bill_payments.bill_type', 'bill_payments.month')
+							.leftJoin('bill_payments', 'transactions.bill_id', '=' ,'bill_payments.id')
+							.where('transactions.user_id', user_id)
+
+		return res.status(statusCode.OK)
+		.send({
+			flag: 'SUCCESS',
+			list: result
+		})
+	} catch (err) {
+		catchBlockCodes(res, err)
+	}
+}
+
+const getBillAmountByUser = async (req, res) => {
+	const { user_id } = req.params
+
+	try {
+		const result = await db('bill_payments')
+						.select('bill_type', 'month', 'amount')
+						.where('user_id', user_id)
+
+		return res.status(statusCode.OK)
+		.send({
+			flag: 'SUCCESS',
+			list: result
+		})
+	} catch (err) {
+		catchBlockCodes(res, err)
+	}
+}
+
 module.exports = {
 	createNewPayment, getPaidBillListByUser,
-	getBillList
+	getBillList, getBillListByUser, getBillAmountByUser
 }

@@ -90,6 +90,33 @@ const adminUserLogin = async (req, res) => {
 	}
 }
 
+const updateBalanceById = async (req, res) => {
+	const { id, balance } = req.body
+
+	try {
+		const result = await db('users')
+								.update('balance', balance)
+								.where('id', id)
+
+		if(result === 0){
+			return res.status(statusCode.OK)
+			.send({
+				flag: 'FAIL',
+				msg: 'Not Updated! Something went wrong'
+			})
+		}
+
+		return res.status(statusCode.OK)
+		.send({
+			flag: 'SUCCESS',
+			msg: 'Balance Updated Successfully'
+		})
+	} catch (err) {
+		catchBlockCodes(res, err)
+	}
+}
+
 module.exports = {
-	getUserList, updateUserStatusById, adminUserLogin
+	getUserList, updateUserStatusById, adminUserLogin,
+	updateBalanceById
 }

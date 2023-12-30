@@ -20,7 +20,7 @@ export default function AdminBillList() {
 	<>
 	<PageTitle>Bill List</PageTitle>
 
-	<Card className="w-full md:w-1/3 mx-auto shadow-lg p-6">
+	<Card className="w-full md:w-1/2 mx-auto shadow-lg p-6">
 		<Table>
 			<TableHeader>
 				<TableRow>

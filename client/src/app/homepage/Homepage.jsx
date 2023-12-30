@@ -1,16 +1,101 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/button'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../layout/PageTitle'
+import BarChart from '../../components/BarChart'
+import { fetchUserBillAmount } from '../../api/apiCall'
 
 export default function Homepage() {
   const navigate = useNavigate()
+  const [billAmount, setBillAmount] = useState({
+    gas: [], water: [], electricity: []
+  })
+
+  let gasMonthList = {
+    'January': 0, 
+    'February': 0, 
+    'March': 0, 
+    'April': 0, 
+    'May': 0, 
+    'June': 0, 
+    'July': 0, 
+    'August': 0, 
+    'September': 0, 
+    'October': 0, 
+    'November': 0, 
+    'December': 0
+  }
+
+  let waterMonthList = {
+    'January': 0, 
+    'February': 0, 
+    'March': 0, 
+    'April': 0, 
+    'May': 0, 
+    'June': 0, 
+    'July': 0, 
+    'August': 0, 
+    'September': 0, 
+    'October': 0, 
+    'November': 0, 
+    'December': 0
+  }
+
+  let electricityMonthList = {
+    'January': 0, 
+    'February': 0, 
+    'March': 0, 
+    'April': 0, 
+    'May': 0, 
+    'June': 0, 
+    'July': 0, 
+    'August': 0, 
+    'September': 0, 
+    'October': 0, 
+    'November': 0, 
+    'December': 0
+  }
+
+  useEffect(() => {
+    (async () => {
+      const user_id = sessionStorage.getItem('utl_id')
+      const res = await fetchUserBillAmount(user_id)
+
+      let gasBill          = res?.list?.filter(each => each.bill_type === 'gas')
+      let waterBill        = res?.list?.filter(each => each.bill_type === 'water')
+      let electricityBill  = res?.list?.filter(each => each.bill_type === 'electricity')
+      
+      gasBill?.forEach(each => gasMonthList[each.month] = each.amount)
+      waterBill?.forEach(each => waterMonthList[each.month] = each.amount)
+      electricityBill?.forEach(each => electricityMonthList[each.month] = each.amount)
+
+      setBillAmount({
+        gas: gasMonthList,
+        water: waterMonthList,
+        electricity: electricityMonthList
+      })
+    })()
+  }, [])
 
   return (
     <div className='px-5'>
       <PageTitle>Homepage</PageTitle>
 
-      <div className="flex justify-center">
+      <div className="flex flex-col-reverse md:flex-col items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 justify-center w-full">
+            <BarChart 
+              title='Gas Bill' 
+              values={Object.values(billAmount.gas)} 
+            />
+            <BarChart 
+              title='Electricity Bill' 
+              values={Object.values(billAmount.electricity)} 
+            />
+            <BarChart 
+              title='Water Bill' 
+              values={Object.values(billAmount.water)} 
+            />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 justify-center w-full">
           <Button 
             variant='outline'

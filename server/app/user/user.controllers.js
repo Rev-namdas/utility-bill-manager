@@ -185,7 +185,23 @@ const updateUserEmail = async (req, res) => {
 	}
 }
 
+const getUserBalanceByid = async (req, res) => {
+	const { user_id } = req.params
+
+	try {
+		const result = await db('users').select('balance').where('id', user_id)
+
+		return res.status(statusCode.OK)
+		.send({
+			flag: 'SUCCESS',
+			user: result
+		})
+	} catch (err) {
+		catchBlockCodes(res, err)
+	}
+}
+
 module.exports = {
 	createNewUser, userLogin, fetchEmailExists,
-	updateUserEmail
+	updateUserEmail, getUserBalanceByid
 }

@@ -14,12 +14,16 @@ app.use(morgan('dev'))
 require('./app/user/user.routes')(app)
 // Payment Routes
 require('./app/bill/bill.routes')(app)
+// Reminder Routes
+require('./app/reminder/reminder.routes')(app)
 
 /* Admin Routes */
 // User Routes
 require('./app/admin/user/user.routes')(app)
 // Reminder Routes
 require('./app/admin/reminder/reminder.routes')(app)
+// Voucher Routes
+require('./app/admin/voucher/voucher.routes')(app)
 
 app.listen(5050, () => {
 	console.log('✅ App running on Port: 5050')

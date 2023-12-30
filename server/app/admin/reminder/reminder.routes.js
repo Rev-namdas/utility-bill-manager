@@ -6,5 +6,5 @@ module.exports = (app) => {
 	router.get('/fetch-user-notification/:id', checkUserReminders)
 	router.get('/fetch-reminder-list', getReminderList)
 
-	return app.use('/api/reminder', router)
+	return app.use('/api/admin/reminder', router)
 }
